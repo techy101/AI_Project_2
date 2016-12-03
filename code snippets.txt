@@ -1,0 +1,133 @@
+// From Brian Ecker, code to copy an 8-bit bitmap:
+ 
+#include <fstream.h>
+
+int main()
+{
+  unsigned char buffer[787512];
+
+  ifstream myFile ("im7-c.bmp", ios::in | ios::binary);
+  myFile.read (buffer, 787512);
+ 
+  ofstream hFile ("test.bmp", ios::out | ios::binary);
+  hFile.write (buffer, 787512);
+}
+
+
+
+
+
+
+*************
+
+Properties of File Header
+
+  Size in bytes  data type Name Comment 
+Bitmap File Header 
+  2 UINT  bfType 'B' 'M' 
+  4 DWORD bfSize size of file 
+  2 UINT bfReserved1 reserved 
+  2 UINT bfReserved2 reserved 
+  4 DWORD bfOffBits byte location in the file which is first byte of IMAGE 
+Bitmap Info Header 
+  4 DWORD biSize Size of BITMAPINFOHEADER 
+  4 LONG biWidth width of bitmap 
+  4 LONG biHeight height of bitmap 
+  2 WORD biPlanes 1 
+  2 WORD biBitCount 1 (mono) or 4 (16 clr ) or 8 (256 clr) or 24 (16 Mil) 
+  4 DWORD biCompression RLE COMPRESSION 
+  4 DWORD  biSizeImage width x height 
+  4 LONG  biXPelsPerMeter   
+  4 LONG  biYPelsPerMeter   
+  4 DWORD  biClrUsed Number of palettes used (if less than standard) 
+  4 DWORD  biClrImportant Number of important colour  
+
+TOTAL LENGTH OF BITMAP HEADER IS 54 BYTES (NOT NECESSARILY) 
+depend on size of bitmapinfo header (be careful)
+
+
+***********
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
+
+/*
+  fileName[in] : the name of the bitmap file (with .bmp extension) to open
+  header[out] : an unallocated pointer to store the header's data into
+  data[out] : an unallocated unsigned char pointer to store the integer data in
+
+  returns : 0 for failure, 1 for success
+*/
+
+int openBitmapAndGetInts(char fileName[], char **header, unsigned char **data);
+
+void main(void)
+{
+  char *header;
+  unsigned char *data;
+  int ret = 0;
+
+  //open the bitmap file...
+  ret = openBitmapAndGetInts("test.bmp", &header, &data);
+
+  if(ret != 0)
+  {
+    /*
+      This is where you do all your processing since everything went fine
+    */
+
+    // Make certain to free our data...after all, we're not Microsoft...we
+    // can't afford memory leaks
+    free(header);
+    free(data);
+  }
+}
+
+int openBitmapAndGetInts(char fileName[], char **header, unsigned char **data)
+{
+  int headerSize = /*sizeof(BITMAPFILEHEADER)*/14 + 
+  /*sizeof(BITMAPINFOHEADER)*/ 40 + 1026/*PALLET*/;
+  FILE *file = fopen(fileName, "rb");
+  int num = 0;
+
+  //problem opening the file
+  if(file == 0)
+    return 0;
+
+  //make the room for the header
+  (*header) = (char *)malloc(headerSize);
+  memset(*header, 0, headerSize);
+
+  //make the room for the data
+  (*data) = (unsigned char *)malloc(1024 * 768);
+  memset(*data, 0, 1024 * 768);
+
+  //problem getting the space for the header
+  if((*header) == 0)
+    return 0;
+
+  if((*data) == 0)
+    return 0;
+
+  //read in the header for the bitmap
+  num = fread((*header), 1, headerSize, file);
+	
+  //error reading in header
+  if(num != headerSize)
+    return 0;
+
+  //read in the integer data
+  num = fread((*data), 1, 1024 * 768, file);
+
+  //error reading in data
+  if(num != 1024 * 768)
+    return 0;
+
+  //close the file
+  fclose(file);
+
+  return 1;
+}

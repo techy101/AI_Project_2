@@ -189,6 +189,10 @@ void Load_Bitmap_File
 );
 
 
+//============= NEW: Average_Bitmap_File ========================
+//
+void Average_Bitmap_File(bmpBITMAP_FILE image);
+
 
 //============== Display_Bitmap_File =======================
 //
@@ -236,10 +240,9 @@ int main()
 
 	Display_FileHeader(orig_image.fileheader);
 	Display_InfoHeader(orig_image.infoheader);
+
+
 	//copies from orig_image to copy1
-
-
-
 	Copy_Image(orig_image, copy1);
 	cout << endl << "A copy of the file has been " <<
 		"made in main memory.";
@@ -253,6 +256,23 @@ int main()
 		"an exact copy of the original,";
 
 	cout << endl << "Save the copy as a bitmap." << endl;
+	Save_Bitmap_File(copy1);	// SO the image info is stored in copy1 
+
+	// display the image. 256 scale.
+	//Display_Bitmap_File(copy1);
+
+	// do processing
+	// begin with averaging
+
+
+
+
+
+	// display the image. 256 scale.
+	cout << endl << endl << "Displaying image again to test effect of processing " << endl;
+	Display_Bitmap_File(copy1);
+
+	cout << endl << "Save the processed copy as a bitmap." << endl;
 	Save_Bitmap_File(copy1);
 
 	Remove_Image(copy1);
@@ -440,6 +460,24 @@ void Load_Bitmap_File(bmpBITMAP_FILE &image)
 
 	fs_data.close();  //close the file
 					  // (consider replacing with a function w/error checking)
+}
+
+//============== Average_Bitmap_File ========================
+//
+void Average_Bitmap_File(bmpBITMAP_FILE & image)
+{
+	int bitmap_height, bitmap_width, padding;
+
+	int averaging_constant = 4;		// replace each block of 4 pixels with 1 byte
+
+	bitmap_height = Assemble_Integer(image.infoheader.biHeight);
+	bitmap_height = bitmap_height / averaging_constant;		// 
+	bitmap_width = Assemble_Integer(image.infoheader.biWidth);
+	bitmap_width = bitmap_width / averaging_constant;
+	padding = Calc_Padding(bitmap_width);		// TODO math
+
+	// create a new file/array with height and width the new size?
+
 }
 
 //============== Display_Bitmap_File =======================
