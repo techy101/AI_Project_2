@@ -1,4 +1,6 @@
 ﻿  AI_Project_2.cpp
-c:\users\rachel\documents\github\ai_project_2\ai_project_2\ai_project_2.cpp(544): warning C4101: 'padding': unreferenced local variable
-c:\users\rachel\documents\github\ai_project_2\ai_project_2\ai_project_2.cpp(545): warning C4101: 'cursor1': unreferenced local variable
+c:\users\rachel\documents\github\ai_project_2\ai_project_2\ai_project_2.cpp(476): warning C4101: 'paddingAveraged': unreferenced local variable
+c:\users\rachel\documents\github\ai_project_2\ai_project_2\ai_project_2.cpp(475): warning C4101: 'padding': unreferenced local variable
+c:\users\rachel\documents\github\ai_project_2\ai_project_2\ai_project_2.cpp(592): warning C4101: 'padding': unreferenced local variable
+c:\users\rachel\documents\github\ai_project_2\ai_project_2\ai_project_2.cpp(593): warning C4101: 'cursor1': unreferenced local variable
   AI_Project_2.vcxproj -> C:\Users\Rachel\Documents\GitHub\AI_Project_2\Debug\AI_Project_2.exe
