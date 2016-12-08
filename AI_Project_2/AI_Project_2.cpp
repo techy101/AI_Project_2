@@ -61,8 +61,6 @@ using namespace std;
 
 typedef unsigned char  byte_t;
 
-int averaging_constant = 8;		// replace each block of 8 pixels with 1 byte
-
 // The following two structures were adapted from
 // http://users.ece.gatech.edu/~slabaugh/personal/c/bmpwrite.html
 struct bmpFILEHEADER
@@ -227,7 +225,7 @@ void Save_Bitmap_File(bmpBITMAP_FILE &image);
 void Open_Output_File(ofstream &out_file);
 
 
-
+int averaging_constant;
 
 
 //======================  MAIN  ============================
@@ -265,6 +263,10 @@ int main()
 	//Display_Bitmap_File(copy1);
 
 	// do processing
+	cout << endl << "Apply averaging: enter a constant that will average <constant-sqd> number of pixels" << endl <<
+		" and replace those pixels with 1 averaged value. " << endl;
+	cin >> averaging_constant;
+
 	// begin with averaging
 	Copy_Then_Average_Bitmap_File(copy1, image_averaged);
 
@@ -521,8 +523,7 @@ void Copy_Then_Average_Bitmap_File(bmpBITMAP_FILE &image_orig, bmpBITMAP_FILE &i
 	//	}
 	//}
 
-	int height, width;
-	int averaging_constant = 8;		// 16 max, thinking
+	int height, width;	
 
 	image_copy.fileheader = image_orig.fileheader;
 	image_copy.infoheader = image_orig.infoheader;
@@ -539,7 +540,7 @@ void Copy_Then_Average_Bitmap_File(bmpBITMAP_FILE &image_orig, bmpBITMAP_FILE &i
 		image_copy.image_ptr[i] = new byte_t[width];
 
 	// new averaging code
-	for (int i = 0; i < height / averaging_constant; i++)
+	for (int i = 0; i < height / averaging_constant; i++)		// dimensions of resized image
 	{
 		for (int j = 0; j < width / averaging_constant; j++)
 		{ 
