@@ -193,7 +193,7 @@ void Load_Bitmap_File
 
 //============= NEW: Average_Bitmap_File ========================
 //
-void Average_Bitmap_File(bmpBITMAP_FILE &image, bmpBITMAP_FILE &imageAveraged);
+void Copy_Then_Average_Bitmap_File(bmpBITMAP_FILE &image_orig, bmpBITMAP_FILE &image_copy);
 
 
 //============== Display_Bitmap_File =======================
@@ -235,11 +235,11 @@ void Open_Output_File(ofstream &out_file);
 //
 int main()
 {
-	bmpBITMAP_FILE orig_image;
+	bmpBITMAP_FILE orig_image;		// <= cleanup
 	bmpBITMAP_FILE copy1;
 	bmpBITMAP_FILE image_averaged;
 
-	Load_Bitmap_File(orig_image);		// <=
+	Load_Bitmap_File(orig_image);	
 
 	Display_FileHeader(orig_image.fileheader);
 	Display_InfoHeader(orig_image.infoheader);
@@ -250,7 +250,7 @@ int main()
 	cout << endl << "A copy of the file has been " <<
 		"made in main memory.";
 
-	Remove_Image(orig_image);	// frees dynamic memory too		<=
+	Remove_Image(orig_image);	// frees dynamic memory too	
 
 	cout << endl << "The original image has been " <<
 		"removed from main memory.";
@@ -266,8 +266,11 @@ int main()
 
 	// do processing
 	// begin with averaging
-	Average_Bitmap_File(copy1, image_averaged);
+	Copy_Then_Average_Bitmap_File(copy1, image_averaged);
 
+	// display innfo for averaged imqge
+	Display_FileHeader(image_averaged.fileheader);
+	Display_InfoHeader(image_averaged.infoheader);
 
 	// display the image. 256 scale.
 	/*cout << endl << endl << "Displaying image again to test effect of processing... " << endl;
@@ -279,7 +282,7 @@ int main()
 	Remove_Image(copy1);
 	Remove_Image(image_averaged);
 
-	// cleanup
+	// a bit for cleanup
 	/*Load_Bitmap_File(orig_image);
 	Remove_Image(orig_image);*/
 
@@ -468,42 +471,99 @@ void Load_Bitmap_File(bmpBITMAP_FILE &image)
 					  // (consider replacing with a function w/error checking)
 }
 
-//============== Average_Bitmap_File ========================
+//============== Copy_Then_Average_Bitmap_File ========================
 //
-void Average_Bitmap_File(bmpBITMAP_FILE &image, bmpBITMAP_FILE &imageAveraged)
+void Copy_Then_Average_Bitmap_File(bmpBITMAP_FILE &image_orig, bmpBITMAP_FILE &image_copy)
 {
-	int bitmap_height, bitmap_width, padding;
-	int bitmap_heightAveraged, bitmap_widthAveraged, paddingAveraged;
+	//int orig_height, orig_width,
+	//	copy_height, copy_width;
+	//int averaging_constant = 8;		// 16 max, thinking
 
-	bitmap_height = Assemble_Integer(image.infoheader.biHeight) / averaging_constant;		// 
-	bitmap_width = Assemble_Integer(image.infoheader.biWidth) / averaging_constant;
-	//padding = Calc_Padding(bitmap_width);		
+	//image_copy.fileheader = image_orig.fileheader;
+	//image_copy.infoheader = image_orig.infoheader;
+	//image_copy.palette = image_orig.palette;
 
-	bitmap_heightAveraged = bitmap_height / averaging_constant;
-	bitmap_widthAveraged = bitmap_width / averaging_constant;
-	//paddingAveraged = Calc_Padding(bitmap_widthAveraged);
+	//orig_height = Assemble_Integer(image_orig.infoheader.biHeight);
+	//orig_width = Assemble_Integer(image_orig.infoheader.biWidth);
+	//copy_height = Assemble_Integer(image_copy.infoheader.biHeight) / averaging_constant;		// resize, eh?
+	//copy_width = Assemble_Integer(image_copy.infoheader.biWidth) / averaging_constant;
 
-	// allocate a new 2 dim array with different height and width...
-	imageAveraged.image_ptr = new byte_t*[bitmap_heightAveraged];
-	for (int i = 0; i < bitmap_heightAveraged; i++)
-		imageAveraged.image_ptr[i] = new byte_t[bitmap_widthAveraged];
+	//image_copy.image_ptr = new byte_t*[copy_height];
 
-	for (int i = 0; i < bitmap_height; i += averaging_constant)		// step through original image one block at a time
+	//for (int i = 0; i < copy_height; i++)
+	//	image_copy.image_ptr[i] = new byte_t[copy_width];
+
+
+	//load the bytes into the new array one byte at a time
+	//for (int i = 0; i < height; i++)
+	//{
+	//	for (int j = 0; j < width; j++)
+	//		image_copy.image_ptr[i][j] =
+	//		image_orig.image_ptr[i][j];				//********Can add values here and change image*****
+	//}
+
+	// *** old averaging code
+	//for (int i = 0; i < orig_height; i += averaging_constant)		// step through original image one row at a time
+	//{
+	//	for (int j = 0; j < orig_width; j += averaging_constant)	// step through original image one row at a time
+	//	{
+	//		image_copy.image_ptr[i/averaging_constant][j/averaging_constant] = 0;
+
+	//		// sum up pixel values
+	//		for (int k = i; k < (i + averaging_constant); k++)		// go through each pixel of the block
+	//		{
+	//			for (int l = j; l < (j + averaging_constant); l++)
+	//				image_copy.image_ptr[i/averaging_constant][j/averaging_constant] += image_orig.image_ptr[k][l];
+	//		}
+
+	//		// apply the averaging
+	//		image_copy.image_ptr[i / averaging_constant][j / averaging_constant] /= averaging_constant;
+	//	}
+	//}
+
+	int height, width;
+	int averaging_constant = 8;		// 16 max, thinking
+
+	image_copy.fileheader = image_orig.fileheader;
+	image_copy.infoheader = image_orig.infoheader;
+	image_copy.palette = image_orig.palette;
+
+	// get dimensions
+	height = Assemble_Integer(image_orig.infoheader.biHeight);
+	width = Assemble_Integer(image_orig.infoheader.biWidth);
+
+	// allocate the array
+	image_copy.image_ptr = new byte_t*[height];
+
+	for (int i = 0; i < height; i++)
+		image_copy.image_ptr[i] = new byte_t[width];
+
+	// new averaging code
+	for (int i = 0; i < height / averaging_constant; i++)
 	{
-		for (int j = 0; j < bitmap_width; j += averaging_constant)
-		{
-			imageAveraged.image_ptr[i/averaging_constant][j/averaging_constant] = 0;
-
-			// sum up pixel values
-			for (int k = i; k < (i + averaging_constant); k++)		// go through each pixel of the block
+		for (int j = 0; j < width / averaging_constant; j++)
+		{ 
+			image_copy.image_ptr[i][j] = 0;		// initialize the average
+	
+			// sum up pixel values from original image one block at a time
+			for (int k = i*averaging_constant; k < (i+1)*averaging_constant; k++)		
 			{
-				for (int l = j; l < (j + averaging_constant); l++)
-					imageAveraged.image_ptr[i/averaging_constant][j/averaging_constant] += image.image_ptr[k][l];
+				for (int l = j*averaging_constant; l < (j + 1)*averaging_constant; l++)	
+				{
+					image_copy.image_ptr[i][j] += image_orig.image_ptr[k][l];
+				}
 			}
 
-			// apply the averaging
-			imageAveraged.image_ptr[i / averaging_constant][j / averaging_constant] /= averaging_constant;		
+			// apply the average
+			image_copy.image_ptr[i][j] = image_copy.image_ptr[i][j] / averaging_constant;
 		}
+	}
+
+	// fill the rest of the image with... 
+	for (int i = height/averaging_constant; i < height; i++)
+	{
+		for (int j = width/averaging_constant; j < width; j++)
+			image_copy.image_ptr[i][j] = 255;				// white
 	}
 }
 
@@ -517,7 +577,7 @@ void Display_Bitmap_File(bmpBITMAP_FILE &image)
 	Display_FileHeader(image.fileheader);
 	Display_InfoHeader(image.infoheader);
 
-	//display the palatte here too, perhaps.
+	//display the palette here too, perhaps.
 
 	bitmap_height = Assemble_Integer(image.infoheader.biHeight);
 	bitmap_width = Assemble_Integer(image.infoheader.biWidth);
@@ -626,11 +686,11 @@ void Save_Bitmap_File(bmpBITMAP_FILE &image)
 		exit(103);
 	}
 	//this loop writes the image data
-	for (int i = 0; i< height; i++)
+	for (int i = 0; i < height; i++)
 	{
-		for (int j = 0; j<width; j++)
+		for (int j = 0; j < width; j++)
 		{
-			fs_data.write((char *)&image.image_ptr[i][j], sizeof(byte_t));
+			fs_data.write((char *)&image.image_ptr[i][j], sizeof(byte_t));	// error here with previous code
 			if (!fs_data.good())
 			{
 				cout << "\aError 104 writing bitmap data";
