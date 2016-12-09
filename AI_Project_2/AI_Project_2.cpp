@@ -77,31 +77,31 @@ struct bmpFILEHEADER
 
 struct bmpINFOHEADER
 {
-	byte_t	biSize[4];    // Size of the bmpInfoHeader,
-						  // i.e. sizeof(bmpInfoheader)
-	byte_t	biWidth[4];   // Width of bitmap, in pixels
-						  // change this if you change
-						  // the size of the image. see ***** note below
+	byte_t	biSize[4];						// Size of the bmpInfoHeader,
+											// i.e. sizeof(bmpInfoheader)
+	byte_t	biWidth[4];						// Width of bitmap, in pixels
+											// change this if you change
+											// the size of the image. see ***** note below
 
-	byte_t  	biHeight[4];  // Height of bitmap, in pixels
-							  //change this if you change the
-							  // size of the image. see ***** note below
-	byte_t 	biPlanes[2];  // Should/must be 1.
-	byte_t	biBitCount[2]; // The bit depth of the bitmap.
-						   // For 8 bit bitmaps, this is 8
-	byte_t  	biCompression[4];   // Should be 0 for
-									// uncompressed bitmaps
-	byte_t       biSizeImage[4];    //The size of the padded
-									// image, in bytes
-	byte_t       biXPelsPerMeter[4]; //Horizontal resolution,
-									 // in pixels per meter.  Not signif.
-	byte_t       biYPelsPermeter[4];  //Vertical resolution,
-									  //as above.
-	byte_t       biClrUsed[4];   //Indicates the number of
-								 //colors in the palette.
-	byte_t       biClrImportant[4]; //Indicates number of
-									//colors to display the bitmap.
-									// Set to zero to indicate all colors should be used.
+	byte_t  	biHeight[4];				// Height of bitmap, in pixels
+											// change this if you change the
+											// size of the image. see ***** note below
+	byte_t 	biPlanes[2];					// Should/must be 1.
+	byte_t	biBitCount[2];					// The bit depth of the bitmap.
+											// For 8 bit bitmaps, this is 8
+	byte_t  	biCompression[4];			// Should be 0 for
+											// uncompressed bitmaps
+	byte_t       biSizeImage[4];			// The size of the padded
+											// image, in bytes
+	byte_t       biXPelsPerMeter[4];		// Horizontal resolution,
+											// in pixels per meter.  Not signif.
+	byte_t       biYPelsPermeter[4];		// Vertical resolution,
+											// as above.
+	byte_t       biClrUsed[4];				// Indicates the number of
+											// colors in the palette.
+	byte_t       biClrImportant[4];			// Indicates number of
+											// colors to display the bitmap.
+											// Set to zero to indicate all colors should be used.
 };
 // *****Note (from above) you will have to write
 //         a function to do this.  I have not yet.
